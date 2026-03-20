@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AB膠秤重計算機</title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #3498db; --range-bg: #fffbe6; --range-text: #d48806; --model-bg: #f8f9fa; }
+        body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; background: #eef2f5; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .app-card { background: white; width: 100%; max-width: 420px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 15px; box-sizing: border-box; }
+        h2 { text-align: center; color: var(--primary); font-size: 1.1rem; margin: 5px 0 15px 0; }
+
+        .glue-selector { display: flex; gap: 8px; margin-bottom: 15px; width: 100%; }
+        .glue-btn { 
+            flex: 1; min-width: 0; border: 2px solid #eee; padding: 10px 2px; border-radius: 10px; 
+            background: white; text-align: center; cursor: pointer; transition: 0.2s; 
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .glue-btn.active { border-color: var(--accent); background: #eaf6ff; }
+        .glue-btn div { font-weight: bold; font-size: 0.9rem; color: #2c3e50; white-space: nowrap; }
+        .glue-btn span { font-size: 0.7rem; color: #7f8c8d; display: block; margin-top: 2px; }
+
+        .input-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; font-size: 0.85rem; }
+        input { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 10px; font-size: 1.3rem; font-weight: bold; box-sizing: border-box; outline: none; text-align: center; }
+        .readonly { background: #f9f9f9; color: var(--accent); border-left: 6px solid var(--accent); }
+
+        .range-box { background: var(--range-bg); border: 1px solid #ffe58f; border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 15px; }
+        .range-label { font-size: 0.8rem; color: #856404; margin-bottom: 5px; font-weight: bold; }
+        .range-value { font-size: 1.5rem; font-weight: 800; color: var(--range-text); letter-spacing: 1px; }
+
+        .model-list-container { background: var(--model-bg); border-radius: 12px; padding: 12px; border: 1px inset #eee; }
+        .model-title { font-size: 0.8rem; font-weight: bold; color: #666; margin-bottom: 8px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+        .model-tags { display: flex; flex-wrap: wrap; gap: 6px; max-height: 150px; overflow-y: auto; }
+        .tag { background: #fff; border: 1px solid #dee2e6; color: #495057; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-family: monospace; }
+
+        .btn-reset { margin-top: 10px; background: none; border: none; color: #bbb; cursor: pointer; text-decoration: underline; width: 100%; font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+
+<div class="app-card">
+    <h2>AB膠秤重計算機</h2>
+    
+    <div class="glue-selector" id="selector"></div>
+
+    <div class="input-group">
+        <label id="labelMain">1. 倒入主要劑量 (g)</label>
+        <input type="number" id="inputMain" placeholder="0.0" oninput="calculate()">
+    </div>
+
+    <div class="input-group">
+        <label id="labelSub">2. 應補次要劑量 (g)</label>
+        <input type="text" id="targetSub" class="readonly" readonly placeholder="---">
+    </div>
+
+    <div class="range-box">
+        <div class="range-label" id="rangeLabel">精準範圍 (±1%)</div>
+        <div id="rangeDisplay" class="range-value">--- ~ ---</div>
+    </div>
+
+    <div class="model-list-container">
+        <div class="model-title">💡 適用產品型號：</div>
+        <div id="modelTags" class="model-tags"></div>
+    </div>
+
+    <button class="btn-reset" onclick="resetData()">清空數據</button>
+</div>
+
+<script>
+    const glueData = [
+        { 
+            name: "GLU 17+18", first: "B", aFull: "GLU-0018", bFull: "GLU-0017", rA: 0.15, rB: 1,
+            models: ["ICO-HSR-042", "ICO-HSR-1902", "ZR3N", "ZR3N5", "ZR3N6"]
+        },
+        { 
+            name: "GLU 31+32", first: "A", aFull: "GLU-0031", bFull: "GLU-0032", rA: 1, rB: 0.1,
+            models: ["CS-30RX", "KT-20R-H.T", "KT-31R-H.T", "KT-31R-HTST", "M84QD-PVC-2M-N", "M84R-PVC-0.2M-N", "SM6T.2D", "ZS301", "ZS305", "ZS311", "ZS315"]
+        },
+        { 
+            name: "GLU 35+36", first: "A", aFull: "GLU-0035 (0035-1)", bFull: "GLU-0036", rA: 1, rB: 0.5,
+            models: ["CS-15B", "CS-95", "CS-95A", "CS-9B", "GR04.202", "KIZ-E", "KT-09R-CH", "KT-15", "KT-16", "KT-43", "TDL-11", "TDL", "ZE255", "ZE235", "ZR2", "ZR25", "ZR2N", "ZR2N10", "ZR3", "ZR35", "KT-30R-LC", "SQ-03"]
+        }
+    ];
+
+    let currentIdx = 0;
+
+    function init() {
+        const container = document.getElementById('selector');
+        glueData.forEach((item, idx) => {
+            const btn = document.createElement('button');
+            btn.className = `glue-btn ${idx === 0 ? 'active' : ''}`;
+            btn.onclick = () => selectGlue(idx, btn);
+            btn.innerHTML = `<div>${item.name}</div><span>${item.rA}:${item.rB}</span>`;
+            container.appendChild(btn);
+        });
+        updateUI();
+    }
+
+    function selectGlue(idx, btn) {
+        currentIdx = idx;
+        document.querySelectorAll('.glue-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateUI();
+        calculate();
+    }
+
+    function updateUI() {
+        const item = glueData[currentIdx];
+        const tagContainer = document.getElementById('modelTags');
+        
+        // 根據不同組合決定誰先秤
+        if (item.first === "B") {
+            document.getElementById('labelMain').innerText = `1. 秤得B劑 (${item.bFull}) (g)`;
+            document.getElementById('labelSub').innerText = `2. A劑應重 (${item.aFull}) (g)`;
+            document.getElementById('rangeLabel').innerText = `A 劑精準範圍 (±1%)`;
+        } else {
+            document.getElementById('labelMain').innerText = `1. 秤得A劑 (${item.aFull}) (g)`;
+            document.getElementById('labelSub').innerText = `2.  B劑應重 (${item.bFull}) (g)`;
+            document.getElementById('rangeLabel').innerText = `B 劑精準範圍 (±1%)`;
+        }
+
+        // 更新型號標籤
+        tagContainer.innerHTML = "";
+        item.models.forEach(m => {
+            const span = document.createElement('span');
+            span.className = "tag";
+            span.innerText = m;
+            tagContainer.appendChild(span);
+        });
+    }
+
+    function calculate() {
+        const inputVal = parseFloat(document.getElementById('inputMain').value);
+        const item = glueData[currentIdx];
+        
+        if (isNaN(inputVal) || inputVal <= 0) {
+            document.getElementById('targetSub').value = "";
+            document.getElementById('rangeDisplay').innerText = "--- ~ ---";
+            return;
+        }
+
+        let targetSub;
+        if (item.first === "B") {
+            // 輸入的是 B，求 A -> A = B * (rA / rB)
+            targetSub = inputVal * (item.rA / item.rB);
+        } else {
+            // 輸入的是 A，求 B -> B = A * (rB / rA)
+            targetSub = inputVal * (item.rB / item.rA);
+        }
+
+        const minSub = (targetSub * 0.99).toFixed(2);
+        const maxSub = (targetSub * 1.01).toFixed(2);
+
+        document.getElementById('targetSub').value = targetSub.toFixed(2) + " g";
+        document.getElementById('rangeDisplay').innerText = `${minSub} ~ ${maxSub}`;
+    }
+
+    function resetData() {
+        document.getElementById('inputMain').value = "";
+        calculate();
+    }
+
+    init();
+</script>
+
+</body>
+</html>
