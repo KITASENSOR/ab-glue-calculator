@@ -20,7 +20,7 @@
             background: white; width: 94%; max-width: 420px; border-radius: 24px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 20px; box-sizing: border-box; 
             margin: 10px auto; display: flex; flex-direction: column; 
-            padding-bottom: 20px; /* 為下方鍵盤留空間 */
+            padding-bottom: 30px;
         }
         
         .home-menu { display: flex; flex-direction: column; gap: 15px; padding: 10px 0; }
@@ -49,8 +49,7 @@
             font-size: 1.6rem; font-weight: bold; box-sizing: border-box; text-align: center; outline: none;
             background: #fff; cursor: pointer;
         }
-        /* 聚焦效果 */
-        input:focus { border-color: var(--accent); background: #fdfdfd; }
+        input.active-focus { border-color: var(--accent); background: #f0f7ff; }
 
         .btn-reset-inline {
             position: absolute; right: 0; top: 0; background: #fff; 
@@ -60,8 +59,15 @@
 
         .result-box { border-radius: 16px; padding: 12px; text-align: center; margin-bottom: 10px; border: 2px solid transparent; transition: 0.3s; }
         .res-hand-total { background: #f8f9fa; border-color: #eee; }
-        .res-machine { background: var(--machine-bg); border-color: #91d5ff; }
         
+        .res-machine { background: var(--machine-bg); border-color: #91d5ff; }
+        .res-machine.status-danger { background: var(--danger-bg); border-color: var(--danger-border); }
+        .res-machine.status-danger .res-value, .res-machine.status-danger .res-range-value { color: var(--danger-text) !important; }
+        .res-machine.status-warn { background: var(--warn-bg); border-color: var(--warn-border); }
+        .res-machine.status-warn .res-value, .res-machine.status-warn .res-range-value { color: var(--warn-text) !important; }
+        .res-machine.status-ok { background: var(--ok-bg); border-color: var(--ok-border); }
+        .res-machine.status-ok .res-value, .res-machine.status-ok .res-range-value { color: var(--ok-text) !important; }
+
         .res-label { font-size: 0.9rem; color: #666; margin-bottom: 2px; font-weight: bold; }
         .res-value { font-size: 1.8rem; font-weight: 800; color: var(--primary); transition: 0.3s; }
         .res-sub-label { font-size: 0.8rem; color: #888; margin-top: 5px; }
@@ -76,27 +82,28 @@
         
         .hidden { display: none !important; }
 
-        /* 自定義小型鍵盤樣式 */
+        /* 小型數字鍵盤 - 移除底部按鈕，縮減高度 */
         #customKb {
             position: fixed; bottom: 0; left: 0; right: 0; 
-            background: #d1d4d9; padding: 8px; 
+            background: #d1d4d9; padding: 10px 8px 25px 8px; /* 底部多留一點白給手勢列 */
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 1000; transition: transform 0.3s ease;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.15);
+            z-index: 1000; transition: transform 0.25s ease-out;
             transform: translateY(100%);
         }
         #customKb.show { transform: translateY(0); }
         .kb-btn {
-            background: #fff; border: none; padding: 15px; border-radius: 8px;
-            font-size: 1.4rem; font-weight: bold; color: #000;
-            box-shadow: 0 1px 0 rgba(0,0,0,0.2); cursor: pointer;
+            background: #fff; border: none; padding: 18px; border-radius: 8px;
+            font-size: 1.5rem; font-weight: bold; color: #000;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.3); cursor: pointer;
             display: flex; justify-content: center; align-items: center;
+            -webkit-tap-highlight-color: transparent;
         }
         .kb-btn:active { background: #bdc3c7; }
         .kb-btn.action { background: #acb1b9; }
     </style>
 </head>
-<body>
+<body onclick="handleGlobalClick(event)">
 
 <div class="app-card">
     <div id="homePage" class="home-menu">
@@ -113,12 +120,12 @@
         <div class="glue-selector" id="handTypeSelector">
             <div class="glue-opt" onclick="setHandType(0)">17+18</div>
             <div class="glue-opt" onclick="setHandType(1)">31+32</div>
-            <div class="glue-opt active" onclick="setHandType(2)">35+36</div>
+            <div class="glue-opt" onclick="setHandType(2)">35+36</div>
         </div>
         <div class="input-group">
             <label id="handLabelA">主劑重量 (g)</label>
             <button class="btn-reset-inline" onclick="resetHand()">清空數據</button>
-            <input type="text" id="handInputA" placeholder="點擊輸入重量" readonly onclick="showKb(this)">
+            <input type="text" id="handInputA" placeholder="點擊輸入重量" readonly onclick="showKb(this, event)">
         </div>
         <div class="result-box res-hand-total">
             <div class="res-label">預估混合總重 (A+B)</div>
@@ -141,11 +148,11 @@
         <div class="input-group">
             <label>主劑 (GLU-0035/35-1) (g)</label>
             <button class="btn-reset-inline" onclick="resetMach()">清空數據</button>
-            <input type="text" id="machInputA" placeholder="點擊輸入重量" readonly onclick="showKb(this)">
+            <input type="text" id="machInputA" placeholder="點擊輸入重量" readonly onclick="showKb(this, event)">
         </div>
         <div class="input-group">
             <label>硬化劑 (GLU-0036) (g)</label>
-            <input type="text" id="machInputB" placeholder="點擊輸入重量" readonly onclick="showKb(this)">
+            <input type="text" id="machInputB" placeholder="點擊輸入重量" readonly onclick="showKb(this, event)">
         </div>
         <div id="machBox" class="result-box res-machine">
             <div class="res-label">實測重量比 (B ÷ A)</div>
@@ -156,7 +163,7 @@
     </div>
 </div>
 
-<div id="customKb">
+<div id="customKb" onclick="event.stopPropagation()">
     <div class="kb-btn" onclick="kbInput('1')">1</div>
     <div class="kb-btn" onclick="kbInput('2')">2</div>
     <div class="kb-btn" onclick="kbInput('3')">3</div>
@@ -169,7 +176,6 @@
     <div class="kb-btn" onclick="kbInput('.')">.</div>
     <div class="kb-btn" onclick="kbInput('0')">0</div>
     <div class="kb-btn action" onclick="kbDel()">←</div>
-    <div class="kb-btn action" style="grid-column: span 3; font-size: 1rem;" onclick="hideKb()">隱藏鍵盤</div>
 </div>
 
 <script>
@@ -183,22 +189,36 @@
     let activeInput = null;
 
     // 鍵盤邏輯
-    function showKb(el) {
+    function showKb(el, e) {
+        e.stopPropagation(); // 防止點擊輸入框同時觸發 body 的隱藏事件
+        if (activeInput) activeInput.classList.remove('active-focus');
         activeInput = el;
+        activeInput.classList.add('active-focus');
         document.getElementById('customKb').classList.add('show');
     }
+
     function hideKb() {
+        if (activeInput) activeInput.classList.remove('active-focus');
         document.getElementById('customKb').classList.remove('show');
         activeInput = null;
     }
+
+    // 處理全局點擊隱藏
+    function handleGlobalClick(e) {
+        // 如果點擊的不是鍵盤且不是輸入框，就隱藏
+        if (!e.target.closest('#customKb') && !e.target.closest('input')) {
+            hideKb();
+        }
+    }
+
     function kbInput(val) {
         if (!activeInput) return;
         if (val === '.' && activeInput.value.includes('.')) return;
         activeInput.value += val;
-        // 觸發對應的計算
         if (activeInput.id === 'handInputA') calcHand();
         else calcMach();
     }
+
     function kbDel() {
         if (!activeInput) return;
         activeInput.value = activeInput.value.slice(0, -1);
@@ -211,13 +231,11 @@
         document.getElementById('handPage').classList.remove('hidden');
         setHandType(1);
     }
-
     function openMachineMode() {
         document.getElementById('homePage').classList.add('hidden');
         document.getElementById('machinePage').classList.remove('hidden');
         resetMach();
     }
-
     function goBack() {
         hideKb();
         document.querySelectorAll('.app-card > div').forEach(d => d.classList.add('hidden'));
@@ -260,7 +278,7 @@
         if (!isNaN(valA) && !isNaN(valB) && valA > 0) {
             const ratio = valB / valA;
             document.getElementById('machRatio').innerText = ratio.toFixed(3);
-            machBox.className = 'result-box res-machine';
+            machBox.classList.remove('status-ok', 'status-warn', 'status-danger');
             
             if (ratio < 0.475 || ratio > 0.525) {
                 machBox.classList.add('status-danger');
@@ -275,7 +293,7 @@
         } else {
             document.getElementById('machRatio').innerText = "---";
             statusText.innerText = "請輸入數值";
-            machBox.className = 'result-box res-machine';
+            machBox.classList.remove('status-ok', 'status-warn', 'status-danger');
         }
     }
 
@@ -284,7 +302,7 @@
         document.getElementById('machInputB').value = "";
         document.getElementById('machRatio').innerText = "---";
         document.getElementById('machStatus').innerText = "請輸入數值";
-        document.getElementById('machBox').className = 'result-box res-machine';
+        document.getElementById('machBox').classList.remove('status-ok', 'status-warn', 'status-danger');
     }
 </script>
 </body>
