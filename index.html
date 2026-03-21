@@ -13,38 +13,58 @@
             --warn-bg: #fffbe6; --warn-border: #ffe58f; --warn-text: #d48806;
             --ok-bg: #f6ffed; --ok-border: #b7eb8f; --ok-text: #389e0d;
         }
-        body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; background: #eef2f5; margin: 0; padding: 10px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-        .app-card { background: white; width: 100%; max-width: 420px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
         
-        .home-menu { display: flex; flex-direction: column; gap: 20px; padding: 20px 0; }
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; position: fixed; width: 100%; }
+        body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; background: #eef2f5; display: flex; justify-content: center; align-items: center; }
+
+        .app-card { 
+            background: white; width: 92%; max-width: 400px; border-radius: 24px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 20px; box-sizing: border-box; 
+            max-height: 98vh; display: flex; flex-direction: column; 
+        }
+        
+        .home-menu { display: flex; flex-direction: column; gap: 15px; padding: 10px 0; }
         .nav-btn { 
-            padding: 40px 20px; border: none; border-radius: 16px; font-size: 1.4rem; font-weight: bold; 
-            cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 10px;
+            padding: 35px 20px; border: none; border-radius: 16px; font-size: 1.3rem; font-weight: bold; 
+            cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;
         }
         .btn-hand-big { background: #fffbe6; color: #d48806; border: 2px solid #ffe58f; }
         .btn-machine-big { background: #e6f7ff; color: #0050b3; border: 2px solid #91d5ff; }
 
-        .header { display: flex; align-items: center; margin-bottom: 20px; position: relative; }
-        .btn-back { position: absolute; left: 0; background: #eee; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
-        h2 { flex: 1; text-align: center; color: var(--primary); font-size: 1.2rem; margin: 0; }
+        .header { display: flex; align-items: center; margin-bottom: 15px; position: relative; }
+        .btn-back { position: absolute; left: 0; background: #eee; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+        h2 { flex: 1; text-align: center; color: var(--primary); font-size: 1.1rem; margin: 0; }
 
-        .glue-selector { display: flex; gap: 6px; margin-bottom: 20px; }
-        .glue-opt { 
-            flex: 1; border: 2px solid #eee; padding: 10px 2px; border-radius: 12px; 
-            background: white; text-align: center; cursor: pointer; font-size: 0.8rem; font-weight: bold; color: #888;
-        }
+        .glue-selector { display: flex; gap: 5px; margin-bottom: 15px; }
+        .glue-opt { flex: 1; border: 2px solid #eee; padding: 10px 2px; border-radius: 12px; background: white; text-align: center; cursor: pointer; font-size: 0.8rem; font-weight: bold; color: #888; }
         .glue-opt.active { border-color: var(--accent); background: #f0f7ff; color: var(--accent); }
 
-        .input-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 0.95rem; }
-        input { 
-            width: 100%; padding: 18px; border: 2px solid #ddd; border-radius: 14px; 
-            font-size: 1.8rem; font-weight: bold; box-sizing: border-box; text-align: center; outline: none;
-        }
+        .input-group { margin-bottom: 12px; position: relative; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; font-size: 0.9rem; }
+        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 12px; font-size: 1.6rem; font-weight: bold; box-sizing: border-box; text-align: center; outline: none; }
 
-        .result-box { border-radius: 16px; padding: 12px 20px; text-align: center; margin-bottom: 15px; border: 2px solid transparent; transition: 0.3s; }
+        /* 輸入框內的清空按鈕 */
+        .input-reset-btn {
+            position: absolute; right: 8px; top: 0; background: #f0f0f0; border: 1px solid #ccc;
+            color: #888; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: bold;
+        }
+        .input-reset-btn:active { background: #e0e0e0; }
+
+        .result-box { border-radius: 16px; padding: 12px; text-align: center; margin-bottom: 10px; border: 2px solid transparent; transition: 0.3s; }
         .res-hand-total { background: #f8f9fa; border-color: #eee; }
+        .res-value { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+        .res-range-value { font-size: 1.1rem; font-weight: bold; margin-top: 2px; }
+
+        .model-list-container { 
+            background: var(--model-bg); border-radius: 12px; padding: 12px; border: 1px solid #eee; 
+            font-size: 0.8rem; margin-top: 5px; overflow-y: auto; max-height: 150px; 
+        }
+        .tag-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+        .tag { background: #fff; border: 1px solid #ddd; padding: 2px 6px; border-radius: 5px; color: #444; }
         
+        .hidden { display: none !important; }
+        
+        /* 打膠機狀態 */
         .res-machine { background: var(--machine-bg); border-color: #91d5ff; }
         .res-machine.status-danger { background: var(--danger-bg); border-color: var(--danger-border); }
         .res-machine.status-danger .res-value, .res-machine.status-danger .res-range-value { color: var(--danger-text) !important; }
@@ -52,82 +72,57 @@
         .res-machine.status-warn .res-value, .res-machine.status-warn .res-range-value { color: var(--warn-text) !important; }
         .res-machine.status-ok { background: var(--ok-bg); border-color: var(--ok-border); }
         .res-machine.status-ok .res-value, .res-machine.status-ok .res-range-value { color: var(--ok-text) !important; }
-
-        .res-label { font-size: 1rem; color: #666; margin-bottom: 2px; font-weight: bold; }
-        .res-value { font-size: 1.8rem; font-weight: 800; color: var(--primary); transition: 0.3s; }
-        .res-sub-label { font-size: 0.85rem; color: #888; margin-top: 5px; }
-        .res-range-value { font-size: 1.1rem; font-weight: bold; margin-top: 2px; }
-
-        .model-list-container { background: var(--model-bg); border-radius: 14px; padding: 15px; border: 1px solid #eee; font-size: 0.8rem; margin-top: 20px; }
-        .tag-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-        .tag { background: #fff; border: 1px solid #ddd; padding: 3px 8px; border-radius: 6px; color: #444; }
-        
-        .hidden { display: none !important; }
-
-        .btn-reset { 
-            margin-top: 20px; background: #fff; border: 1.5px solid #d9d9d9; color: #666; 
-            padding: 10px; border-radius: 12px; cursor: pointer; width: 100%; font-size: 0.9rem; font-weight: bold;
-            transition: all 0.2s;
-        }
-        .btn-reset:active { background: #f5f5f5; border-color: #bcbcbc; }
     </style>
 </head>
 <body>
 
 <div class="app-card">
     <div id="homePage" class="home-menu">
-        <h2 style="margin-bottom: 15px;">請選擇作業模式</h2>
+        <h2 style="margin-bottom: 10px;">請選擇作業模式</h2>
         <button class="nav-btn btn-hand-big" onclick="openHandMode()">🖐️ 手調模式</button>
         <button class="nav-btn btn-machine-big" onclick="openMachineMode()">⚙️ 打膠機校正</button>
     </div>
 
     <div id="handPage" class="hidden">
-        <div class="header">
-            <button class="btn-back" onclick="goBack()">⬅ 返回</button>
-            <h2>手調秤重計算</h2>
-        </div>
+        <div class="header"><button class="btn-back" onclick="goBack()">⬅ 返回</button><h2>手調秤重計算</h2></div>
         <div class="glue-selector" id="handTypeSelector">
             <div class="glue-opt" onclick="setHandType(0)">17+18</div>
             <div class="glue-opt" onclick="setHandType(1)">31+32</div>
-            <div class="glue-opt" onclick="setHandType(2)">35+36</div>
+            <div class="glue-opt active" onclick="setHandType(2)">35+36</div>
         </div>
         <div class="input-group">
             <label id="handLabelA">主劑重量 (g)</label>
-            <input type="number" id="handInputA" placeholder="輸入主劑重量" oninput="calcHand()" autofocus>
+            <button class="input-reset-btn" onclick="resetHand()">清空</button>
+            <input type="number" id="handInputA" placeholder="點擊輸入" oninput="calcHand()">
         </div>
         <div class="result-box res-hand-total">
-            <div class="res-label">預估混合總重 (A+B)</div>
+            <div class="res-label" style="font-size:0.9rem; font-weight:bold; color:#666;">預估混合總重 (A+B)</div>
             <div id="handTotal" class="res-value">--- g</div>
-            <div class="res-sub-label">合格總重範圍 (±1%)</div>
-            <div id="handTotalRange" class="res-range-value" style="color: var(--range-text)">--- ~ ---</div>
+            <div id="handTotalRange" class="res-range-value" style="color: var(--range-text); margin-top:5px;">--- ~ ---</div>
         </div>
         <div class="model-list-container">
             <div style="font-weight:bold; color: #7f8c8d;">💡 適用型號：</div>
             <div id="handTags" class="tag-container"></div>
         </div>
-        <button class="btn-reset" onclick="resetHand()">清空數據</button>
     </div>
 
     <div id="machinePage" class="hidden">
-        <div class="header">
-            <button class="btn-back" onclick="goBack()">⬅ 返回</button>
-            <h2>打膠機比例校正</h2>
-        </div>
-        <div style="text-align:center; margin-bottom:20px; font-weight:bold; color:var(--accent);">GLU 35+36 (目標比值: 0.5)</div>
+        <div class="header"><button class="btn-back" onclick="goBack()">⬅ 返回</button><h2>打膠機比例校正</h2></div>
+        <div style="text-align:center; margin-bottom:10px; font-weight:bold; color:var(--accent); font-size:0.9rem;">GLU 35+36 (目標 0.5)</div>
         <div class="input-group">
-            <label>主劑重量 (g)</label>
-            <input type="number" id="machInputA" placeholder="輸入主劑重量" oninput="calcMach()">
+            <label>主劑重量 (A)</label>
+            <button class="input-reset-btn" onclick="resetMach()">清空</button>
+            <input type="number" id="machInputA" placeholder="輸入主劑" oninput="calcMach()">
         </div>
         <div class="input-group">
-            <label>硬化劑重量 (g)</label>
-            <input type="number" id="machInputB" placeholder="輸入硬化劑重量" oninput="calcMach()">
+            <label>硬化劑重量 (B)</label>
+            <input type="number" id="machInputB" placeholder="輸入硬化劑" oninput="calcMach()">
         </div>
         <div id="machBox" class="result-box res-machine">
-            <div class="res-label">實測重量比 (B ÷ A)</div>
+            <div class="res-label" style="font-size:0.9rem; font-weight:bold; color:#666;">實測重量比 (B ÷ A)</div>
             <div id="machRatio" class="res-value" style="color: var(--machine-text)">---</div>
             <div id="machStatus" class="res-range-value" style="color: var(--machine-text)">請輸入數值</div>
         </div>
-        <button class="btn-reset" onclick="resetMach()">清空數據</button>
     </div>
 </div>
 
@@ -138,12 +133,12 @@
         { name: "35+36", a: "GLU-0035/35-1", r: 0.5, tags: ["CS-15B", "CS-95", "CS-95A", "CS-9B", "GR04.202", "KIZ-E", "KT-09R-CH", "KT-15", "KT-16", "KT-43", "TDL-11", "TDL", "ZE255", "ZE235", "ZR2", "ZR25", "ZR2N", "ZR2N10", "ZR3", "ZR35", "KT-30R-LC", "SQ-03"] }
     ];
 
-    let hIdx = 1; // 預設改為 1 (31+32)
+    let hIdx = 1;
 
     function openHandMode() {
         document.getElementById('homePage').classList.add('hidden');
         document.getElementById('handPage').classList.remove('hidden');
-        setHandType(1); // 進入手調模式時，明確呼叫 31+32
+        setHandType(1);
     }
 
     function openMachineMode() {
@@ -168,14 +163,16 @@
 
     function calcHand() {
         const valA = parseFloat(document.getElementById('handInputA').value);
+        const totalEl = document.getElementById('handTotal');
+        const rangeEl = document.getElementById('handTotalRange');
         if (isNaN(valA) || valA <= 0) {
-            document.getElementById('handTotal').innerText = "--- g";
-            document.getElementById('handTotalRange').innerText = "--- ~ ---";
+            totalEl.innerText = "--- g";
+            rangeEl.innerText = "--- ~ ---";
             return;
         }
         const total = valA * (1 + glueList[hIdx].r);
-        document.getElementById('handTotal').innerText = total.toFixed(2) + " g";
-        document.getElementById('handTotalRange').innerText = `${(total * 0.99).toFixed(2)} ~ ${(total * 1.01).toFixed(2)}`;
+        totalEl.innerText = total.toFixed(2) + " g";
+        rangeEl.innerText = `${(total * 0.99).toFixed(2)} ~ ${(total * 1.01).toFixed(2)}`;
     }
 
     function resetHand() {
@@ -194,8 +191,7 @@
         if (!isNaN(valA) && !isNaN(valB) && valA > 0) {
             const ratio = valB / valA;
             ratioEl.innerText = ratio.toFixed(3);
-            machBox.classList.remove('status-ok', 'status-warn', 'status-danger');
-            
+            machBox.className = "result-box res-machine";
             if (ratio < 0.475 || ratio > 0.525) {
                 machBox.classList.add('status-danger');
                 statusText.innerText = "✖ 異常 (偏差大)";
@@ -209,7 +205,7 @@
         } else {
             ratioEl.innerText = "---";
             statusText.innerText = "請輸入數值";
-            machBox.classList.remove('status-ok', 'status-warn', 'status-danger');
+            machBox.className = "result-box res-machine";
         }
     }
 
@@ -218,7 +214,7 @@
         document.getElementById('machInputB').value = "";
         document.getElementById('machRatio').innerText = "---";
         document.getElementById('machStatus').innerText = "請輸入數值";
-        document.getElementById('machBox').classList.remove('status-ok', 'status-warn', 'status-danger');
+        document.getElementById('machBox').className = "result-box res-machine";
     }
 </script>
 </body>
