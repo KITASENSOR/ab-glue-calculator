@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AB膠計算機</title>
+    <title>AB膠專業計算助手</title>
     <style>
         :root { 
             --primary: #2c3e50; --accent: #3498db; --range-bg: #fffbe6; 
@@ -16,7 +16,6 @@
         body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; background: #eef2f5; margin: 0; padding: 10px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
         .app-card { background: white; width: 100%; max-width: 420px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
         
-        /* 首頁選單 */
         .home-menu { display: flex; flex-direction: column; gap: 20px; padding: 20px 0; }
         .nav-btn { 
             padding: 40px 20px; border: none; border-radius: 16px; font-size: 1.4rem; font-weight: bold; 
@@ -43,11 +42,9 @@
             font-size: 1.8rem; font-weight: bold; box-sizing: border-box; text-align: center; outline: none;
         }
 
-        /* 結果顯示區塊 */
-        .result-box { border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 15px; border: 2px solid transparent; transition: 0.3s; }
+        .result-box { border-radius: 16px; padding: 12px 20px; text-align: center; margin-bottom: 15px; border: 2px solid transparent; transition: 0.3s; }
         .res-hand-total { background: #f8f9fa; border-color: #eee; }
         
-        /* 打膠機狀態辨識樣式 */
         .res-machine { background: var(--machine-bg); border-color: #91d5ff; }
         .res-machine.status-danger { background: var(--danger-bg); border-color: var(--danger-border); }
         .res-machine.status-danger .res-value, .res-machine.status-danger .res-range-value { color: var(--danger-text) !important; }
@@ -56,17 +53,23 @@
         .res-machine.status-ok { background: var(--ok-bg); border-color: var(--ok-border); }
         .res-machine.status-ok .res-value, .res-machine.status-ok .res-range-value { color: var(--ok-text) !important; }
 
-        .res-label { font-size: 1rem; color: #666; margin-bottom: 5px; font-weight: bold; }
-        .res-value { font-size: 2.5rem; font-weight: 800; color: var(--primary); transition: 0.3s; }
-        .res-sub-label { font-size: 0.85rem; color: #888; margin-top: 10px; }
-        .res-range-value { font-size: 1.2rem; font-weight: bold; margin-top: 5px; }
+        .res-label { font-size: 1rem; color: #666; margin-bottom: 2px; font-weight: bold; }
+        .res-value { font-size: 1.8rem; font-weight: 800; color: var(--primary); transition: 0.3s; }
+        .res-sub-label { font-size: 0.85rem; color: #888; margin-top: 5px; }
+        .res-range-value { font-size: 1.1rem; font-weight: bold; margin-top: 2px; }
 
         .model-list-container { background: var(--model-bg); border-radius: 14px; padding: 15px; border: 1px solid #eee; font-size: 0.8rem; margin-top: 20px; }
         .tag-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
         .tag { background: #fff; border: 1px solid #ddd; padding: 3px 8px; border-radius: 6px; color: #444; }
         
         .hidden { display: none !important; }
-        .btn-reset { margin-top: 20px; background: none; border: none; color: #bbb; cursor: pointer; text-decoration: underline; width: 100%; font-size: 0.85rem; }
+
+        .btn-reset { 
+            margin-top: 20px; background: #fff; border: 1.5px solid #d9d9d9; color: #666; 
+            padding: 10px; border-radius: 12px; cursor: pointer; width: 100%; font-size: 0.9rem; font-weight: bold;
+            transition: all 0.2s;
+        }
+        .btn-reset:active { background: #f5f5f5; border-color: #bcbcbc; }
     </style>
 </head>
 <body>
@@ -86,7 +89,7 @@
         <div class="glue-selector" id="handTypeSelector">
             <div class="glue-opt" onclick="setHandType(0)">17+18</div>
             <div class="glue-opt" onclick="setHandType(1)">31+32</div>
-            <div class="glue-opt active" onclick="setHandType(2)">35+36</div>
+            <div class="glue-opt" onclick="setHandType(2)">35+36</div>
         </div>
         <div class="input-group">
             <label id="handLabelA">主劑重量 (g)</label>
@@ -110,19 +113,18 @@
             <button class="btn-back" onclick="goBack()">⬅ 返回</button>
             <h2>打膠機比例校正</h2>
         </div>
-        <div style="text-align:center; margin-bottom:20px; font-weight:bold; color:var(--accent);">GLU 35+36 (標準比值: 0.5)</div>
+        <div style="text-align:center; margin-bottom:20px; font-weight:bold; color:var(--accent);">GLU 35+36 (目標比值: 0.5)</div>
         <div class="input-group">
-            <label>主劑 (GLU-0035/35-1) (g)</label>
-            <input type="number" id="machInputA" placeholder="輸入主劑實測重" oninput="calcMach()">
+            <label>主劑重量 (g)</label>
+            <input type="number" id="machInputA" placeholder="輸入主劑重量" oninput="calcMach()">
         </div>
         <div class="input-group">
-            <label>硬化劑 (GLU-0036) (g)</label>
-            <input type="number" id="machInputB" placeholder="輸入硬化劑實測重" oninput="calcMach()">
+            <label>硬化劑重量 (g)</label>
+            <input type="number" id="machInputB" placeholder="輸入硬化劑重量" oninput="calcMach()">
         </div>
         <div id="machBox" class="result-box res-machine">
             <div class="res-label">實測重量比 (B ÷ A)</div>
             <div id="machRatio" class="res-value" style="color: var(--machine-text)">---</div>
-            <div class="res-sub-label">0.475~0.525 (±5% 範圍)</div>
             <div id="machStatus" class="res-range-value" style="color: var(--machine-text)">請輸入數值</div>
         </div>
         <button class="btn-reset" onclick="resetMach()">清空數據</button>
@@ -136,12 +138,12 @@
         { name: "35+36", a: "GLU-0035/35-1", r: 0.5, tags: ["CS-15B", "CS-95", "CS-95A", "CS-9B", "GR04.202", "KIZ-E", "KT-09R-CH", "KT-15", "KT-16", "KT-43", "TDL-11", "TDL", "ZE255", "ZE235", "ZR2", "ZR25", "ZR2N", "ZR2N10", "ZR3", "ZR35", "KT-30R-LC", "SQ-03"] }
     ];
 
-    let hIdx = 2;
+    let hIdx = 1; // 預設改為 1 (31+32)
 
     function openHandMode() {
         document.getElementById('homePage').classList.add('hidden');
         document.getElementById('handPage').classList.remove('hidden');
-        setHandType(2);
+        setHandType(1); // 進入手調模式時，明確呼叫 31+32
     }
 
     function openMachineMode() {
@@ -159,7 +161,7 @@
         hIdx = idx;
         const opts = document.querySelectorAll('#handTypeSelector .glue-opt');
         opts.forEach((o, i) => o.classList.toggle('active', i === idx));
-        document.getElementById('handLabelA').innerText = `主劑重量 (${glueList[idx].a}) (g)`;
+        document.getElementById('handLabelA').innerText = `主劑 (${glueList[idx].a})`;
         document.getElementById('handTags').innerHTML = glueList[idx].tags.map(t => `<span class="tag">${t}</span>`).join('');
         resetHand();
     }
@@ -187,25 +189,25 @@
         const valB = parseFloat(document.getElementById('machInputB').value);
         const machBox = document.getElementById('machBox');
         const statusText = document.getElementById('machStatus');
+        const ratioEl = document.getElementById('machRatio');
         
         if (!isNaN(valA) && !isNaN(valB) && valA > 0) {
             const ratio = valB / valA;
-            document.getElementById('machRatio').innerText = ratio.toFixed(3);
-            
+            ratioEl.innerText = ratio.toFixed(3);
             machBox.classList.remove('status-ok', 'status-warn', 'status-danger');
             
             if (ratio < 0.475 || ratio > 0.525) {
                 machBox.classList.add('status-danger');
-                statusText.innerText = "✖ 異常 (偏差過大)";
+                statusText.innerText = "✖ 異常 (偏差大)";
             } else if (ratio >= 0.485 && ratio <= 0.515) {
                 machBox.classList.add('status-ok');
-                statusText.innerText = "✔ 合格 (精準度 ±3%)";
+                statusText.innerText = "✔ 合格 (±3%)";
             } else {
                 machBox.classList.add('status-warn');
-                statusText.innerText = "⚠ 示警 (邊緣區間)";
+                statusText.innerText = "⚠ 示警 (邊緣)";
             }
         } else {
-            document.getElementById('machRatio').innerText = "---";
+            ratioEl.innerText = "---";
             statusText.innerText = "請輸入數值";
             machBox.classList.remove('status-ok', 'status-warn', 'status-danger');
         }
