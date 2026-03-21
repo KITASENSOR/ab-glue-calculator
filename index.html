@@ -5,20 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AB膠計算機</title>
     <style>
+        /* 全域變數定義：統一管理顏色，方便後續更換主題 */
         :root { 
             --primary: #2c3e50; --accent: #3498db; --range-text: #d48806; 
             --machine-bg: #e6f7ff; --danger-bg: #fff1f0; --danger-border: #ffa39e; 
             --warn-bg: #fffbe6; --warn-border: #ffe58f; --ok-bg: #f6ffed; --ok-border: #b7eb8f;
         }
+
+        /* 基礎佈局：使用 position: fixed 防止手機網頁滑動產生的跳動感 */
         html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; width: 100%; background: #eef2f5; position: fixed; }
         body { font-family: -apple-system, sans-serif; }
         
+        /* 主卡片容器：限制最大寬度並居中 */
         .app-card { 
             background: white; width: 94%; max-width: 400px; border-radius: 20px; 
             box-shadow: 0 8px 20px rgba(0,0,0,0.1); padding: 15px; box-sizing: border-box; 
             margin: 10px auto; display: flex; flex-direction: column;
         }
         
+        /* 模式選擇按鈕樣式 */
         .home-menu { display: flex; flex-direction: column; gap: 10px; }
         .nav-btn { 
             padding: 25px 15px; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; 
@@ -27,10 +32,12 @@
         .btn-hand-big { background: #fffbe6; color: #d48806; border: 1.5px solid #ffe58f; }
         .btn-machine-big { background: #e6f7ff; color: #0050b3; border: 1.5px solid #91d5ff; }
 
+        /* 標題列與返回按鈕 */
         .header { display: flex; align-items: center; margin-bottom: 10px; position: relative; height: 35px; }
         .btn-back { position: absolute; left: 0; background: #eee; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.8rem; }
         h2 { flex: 1; text-align: center; color: var(--primary); font-size: 0.95rem; margin: 0; }
 
+        /* 膠水規格切換按鈕 (比例標示) */
         .glue-selector { display: flex; gap: 5px; margin-bottom: 10px; }
         .glue-opt { 
             flex: 1; border: 1.5px solid #eee; padding: 6px 0; border-radius: 8px; 
@@ -41,6 +48,7 @@
         .glue-opt .opt-ratio { font-size: 0.7rem; font-weight: normal; }
         .glue-opt.active { border-color: var(--accent); background: #f0f7ff; color: var(--accent); }
 
+        /* 輸入框區塊與清空按鈕 */
         .input-group { margin-bottom: 10px; position: relative; }
         label { display: block; margin-bottom: 3px; font-weight: bold; color: #555; font-size: 0.8rem; }
         input { 
@@ -55,9 +63,11 @@
             border: 1px solid #ccc; color: #666; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;
         }
 
+        /* 計算結果顯示盒 */
         .result-box { border-radius: 14px; padding: 8px; text-align: center; margin-bottom: 5px; border: 1.5px solid transparent; }
         .res-hand-total { background: #f8f9fa; border-color: #eee; }
         .res-machine { background: var(--machine-bg); border-color: #91d5ff; }
+        /* 判定顏色樣式 (由 JS 動態切換) */
         .res-machine.status-danger { background: var(--danger-bg); border-color: var(--danger-border); }
         .res-machine.status-warn { background: var(--warn-bg); border-color: var(--warn-border); }
         .res-machine.status-ok { background: var(--ok-bg); border-color: var(--ok-border); }
@@ -66,12 +76,10 @@
         .res-value { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
         .res-range-value { font-size: 0.9rem; font-weight: bold; margin-top: 1px; }
 
-        /* 適用型號框加大 */
+        /* 適用型號顯示區 (加大版) */
         .model-list-container { 
             background: #f8f9fa; border-radius: 10px; padding: 10px; border: 1px solid #ddd; 
-            font-size: 0.75rem; overflow-y: auto; 
-            height: 140px; /* 加大高度 */
-            margin-top: 5px;
+            font-size: 0.75rem; overflow-y: auto; height: auto; margin-top: 5px;
         }
         .model-title { font-weight: bold; color: #555; margin-bottom: 6px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
         .tag-container { display: flex; flex-wrap: wrap; gap: 5px; }
@@ -79,15 +87,16 @@
         
         .hidden { display: none !important; }
 
+        /* 最佳化：縮小一半高度的自定義鍵盤 */
         #customKb {
             position: fixed; bottom: 0; left: 0; right: 0; 
             background: #d1d4d9; padding: 5px 5px 15px 5px;
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
             box-shadow: 0 -3px 15px rgba(0,0,0,0.2);
             z-index: 9999; transition: transform 0.2s ease-out;
-            transform: translateY(105%);
+            transform: translateY(105%); /* 預設在螢幕下方之外 */
         }
-        #customKb.show { transform: translateY(0); }
+        #customKb.show { transform: translateY(0); } /* 顯示時滑入 */
         .kb-btn {
             background: #fff; border: none; padding: 10px 0; border-radius: 6px;
             font-size: 1.3rem; font-weight: bold; color: #000;
@@ -96,7 +105,7 @@
             touch-action: manipulation;
         }
         .kb-btn:active { background: #bdc3c7; transform: translateY(1px); }
-        .kb-btn.action { background: #acb1b9; }
+        .kb-btn.action { background: #acb1b9; } /* 退後鍵樣式 */
     </style>
 </head>
 <body onclick="handleGlobalClick(event)">
@@ -181,15 +190,17 @@
 </div>
 
 <script>
+    /* 資料庫：存儲膠水規格、比例與對應型號 */
     const glueList = [
         { name: "17+18", a: "GLU-0018", r: 0.15, tags: ["ICO-HSR-042", "ICO-HSR-1902", "ZR3N", "ZR3N5", "ZR3N6"] },
         { name: "31+32", a: "GLU-0031", r: 0.1, tags: ["CS-30RX", "KT-20R-H.T", "KT-31R-H.T", "KT-31R-HTST", "M84QD-PVC-2M-N", "M84R-PVC-0.2M-N", "SM6T.2D", "ZS301", "ZS305", "ZS311", "ZS315"] },
         { name: "35+36", a: "GLU-0035/35-1", r: 0.5, tags: ["CS-15B", "CS-95", "CS-95A", "CS-9B", "GR04.202", "KIZ-E", "KT-09R-CH", "KT-15", "KT-16", "KT-43", "TDL-11", "TDL", "ZE255", "ZE235", "ZR2", "ZR25", "ZR2N", "ZR2N10", "ZR3", "ZR35", "KT-30R-LC", "SQ-03"] }
     ];
 
-    let hIdx = 1;
-    let activeInput = null;
+    let hIdx = 1; // 當前選中的手調模式索引
+    let activeInput = null; // 當前正在輸入的欄位
 
+    /* 鍵盤顯示功能 */
     function showKb(el, e) {
         if(e) e.stopPropagation();
         document.querySelectorAll('input').forEach(i => i.classList.remove('active-focus'));
@@ -198,38 +209,45 @@
         document.getElementById('customKb').classList.add('show');
     }
 
+    /* 隱藏鍵盤 */
     function hideKb() {
         if (activeInput) activeInput.classList.remove('active-focus');
         document.getElementById('customKb').classList.remove('show');
         activeInput = null;
     }
 
+    /* 監聽全域點擊：點擊非輸入框區域則隱藏鍵盤 */
     function handleGlobalClick(e) {
         if (!e.target.closest('#customKb') && !e.target.tagName.includes('INPUT')) hideKb();
     }
 
+    /* 鍵盤按鍵輸入 */
     function kbInput(val) {
         if (!activeInput) return;
-        if (val === '.' && activeInput.value.includes('.')) return;
+        if (val === '.' && activeInput.value.includes('.')) return; // 防止重複小數點
         activeInput.value += val;
         triggerCalc();
     }
 
+    /* 鍵盤退後鍵 */
     function kbDel() {
         if (!activeInput) return;
         activeInput.value = activeInput.value.slice(0, -1);
         triggerCalc();
     }
 
+    /* 判斷當前欄位並執行對應計算 */
     function triggerCalc() {
         if (activeInput.id === 'handInputA') calcHand();
         else calcMach();
     }
 
+    /* 頁面導覽：切換模式 */
     function openHandMode(e) { e.stopPropagation(); document.getElementById('homePage').classList.add('hidden'); document.getElementById('handPage').classList.remove('hidden'); setHandType(1); }
     function openMachineMode(e) { e.stopPropagation(); document.getElementById('homePage').classList.add('hidden'); document.getElementById('machinePage').classList.remove('hidden'); resetMach(); }
     function goBack(e) { if(e) e.stopPropagation(); hideKb(); document.querySelectorAll('.app-card > div').forEach(d => d.classList.add('hidden')); document.getElementById('homePage').classList.remove('hidden'); }
 
+    /* 手調規格切換：更新比例與標籤列表 */
     function setHandType(idx, e) {
         if(e) e.stopPropagation();
         hIdx = idx;
@@ -239,16 +257,22 @@
         resetHand();
     }
 
+    /* 手調模式核心計算邏輯 */
     function calcHand() {
         const valA = parseFloat(document.getElementById('handInputA').value);
-        if (isNaN(valA) || valA <= 0) { document.getElementById('handTotal').innerText = "--- g"; document.getElementById('handTotalRange').innerText = "--- ~ ---"; return; }
-        const total = valA * (1 + glueList[hIdx].r);
+        if (isNaN(valA) || valA <= 0) { 
+            document.getElementById('handTotal').innerText = "--- g"; 
+            document.getElementById('handTotalRange').innerText = "--- ~ ---"; 
+            return; 
+        }
+        const total = valA * (1 + glueList[hIdx].r); // 總重 = A * (1 + 比例)
         document.getElementById('handTotal').innerText = total.toFixed(2) + " g";
-        document.getElementById('handTotalRange').innerText = `${(total * 0.99).toFixed(2)} ~ ${(total * 1.01).toFixed(2)}`;
+        document.getElementById('handTotalRange').innerText = `${(total * 0.99).toFixed(2)} ~ ${(total * 1.01).toFixed(2)}`; // 顯示上下 1% 範圍
     }
 
     function resetHand() { document.getElementById('handInputA').value = ""; calcHand(); }
 
+    /* 打膠機比例校正邏輯與顏色判定 */
     function calcMach() {
         const valA = parseFloat(document.getElementById('machInputA').value);
         const valB = parseFloat(document.getElementById('machInputB').value);
@@ -257,10 +281,23 @@
             const ratio = valB / valA;
             document.getElementById('machRatio').innerText = ratio.toFixed(3);
             machBox.classList.remove('status-ok', 'status-warn', 'status-danger');
-            if (ratio < 0.475 || ratio > 0.525) { machBox.classList.add('status-danger'); document.getElementById('machStatus').innerText = "✖ 異常"; }
-            else if (ratio >= 0.485 && ratio <= 0.515) { machBox.classList.add('status-ok'); document.getElementById('machStatus').innerText = "✔ 合格"; }
-            else { machBox.classList.add('status-warn'); document.getElementById('machStatus').innerText = "⚠ 示警"; }
-        } else { document.getElementById('machRatio').innerText = "---"; document.getElementById('machStatus').innerText = "請輸入數值"; machBox.classList.remove('status-ok', 'status-warn', 'status-danger'); }
+            
+            // 判定區間 (標準 0.5)
+            if (ratio < 0.475 || ratio > 0.525) { 
+                machBox.classList.add('status-danger'); 
+                document.getElementById('machStatus').innerText = "✖ 異常"; 
+            } else if (ratio >= 0.485 && ratio <= 0.515) { 
+                machBox.classList.add('status-ok'); 
+                document.getElementById('machStatus').innerText = "✔ 合格"; 
+            } else { 
+                machBox.classList.add('status-warn'); 
+                document.getElementById('machStatus').innerText = "⚠ 示警"; 
+            }
+        } else { 
+            document.getElementById('machRatio').innerText = "---"; 
+            document.getElementById('machStatus').innerText = "請輸入數值"; 
+            machBox.classList.remove('status-ok', 'status-warn', 'status-danger'); 
+        }
     }
 
     function resetMach() { document.getElementById('machInputA').value = ""; document.getElementById('machInputB').value = ""; calcMach(); }
