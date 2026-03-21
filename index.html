@@ -14,7 +14,7 @@
         body { font-family: -apple-system, sans-serif; }
         
         .app-card { 
-            background: white; width: 92%; max-width: 400px; border-radius: 20px; 
+            background: white; width: 94%; max-width: 400px; border-radius: 20px; 
             box-shadow: 0 8px 20px rgba(0,0,0,0.1); padding: 15px; box-sizing: border-box; 
             margin: 10px auto; display: flex; flex-direction: column;
         }
@@ -33,9 +33,12 @@
 
         .glue-selector { display: flex; gap: 5px; margin-bottom: 10px; }
         .glue-opt { 
-            flex: 1; border: 1.5px solid #eee; padding: 8px 0; border-radius: 8px; 
-            background: white; text-align: center; cursor: pointer; font-size: 0.8rem; font-weight: bold; color: #888;
+            flex: 1; border: 1.5px solid #eee; padding: 6px 0; border-radius: 8px; 
+            background: white; text-align: center; cursor: pointer; color: #888;
+            display: flex; flex-direction: column; line-height: 1.3;
         }
+        .glue-opt .opt-name { font-size: 0.85rem; font-weight: bold; }
+        .glue-opt .opt-ratio { font-size: 0.7rem; font-weight: normal; }
         .glue-opt.active { border-color: var(--accent); background: #f0f7ff; color: var(--accent); }
 
         .input-group { margin-bottom: 10px; position: relative; }
@@ -63,16 +66,19 @@
         .res-value { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
         .res-range-value { font-size: 0.9rem; font-weight: bold; margin-top: 1px; }
 
+        /* 適用型號框加大 */
         .model-list-container { 
-            background: #f8f9fa; border-radius: 10px; padding: 8px; border: 1px solid #eee; 
-            font-size: 0.7rem; overflow-y: auto; max-height: 80px; 
+            background: #f8f9fa; border-radius: 10px; padding: 10px; border: 1px solid #ddd; 
+            font-size: 0.75rem; overflow-y: auto; 
+            height: 140px; /* 加大高度 */
+            margin-top: 5px;
         }
-        .tag-container { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-        .tag { background: #fff; border: 1px solid #ddd; padding: 1px 4px; border-radius: 3px; color: #444; }
+        .model-title { font-weight: bold; color: #555; margin-bottom: 6px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        .tag-container { display: flex; flex-wrap: wrap; gap: 5px; }
+        .tag { background: #fff; border: 1px solid #ccc; padding: 2px 6px; border-radius: 4px; color: #333; }
         
         .hidden { display: none !important; }
 
-        /* 鍵盤高度縮減一半的核心設定 */
         #customKb {
             position: fixed; bottom: 0; left: 0; right: 0; 
             background: #d1d4d9; padding: 5px 5px 15px 5px;
@@ -83,9 +89,7 @@
         }
         #customKb.show { transform: translateY(0); }
         .kb-btn {
-            background: #fff; border: none; 
-            padding: 10px 0; /* 縮減按鈕高度 */
-            border-radius: 6px;
+            background: #fff; border: none; padding: 10px 0; border-radius: 6px;
             font-size: 1.3rem; font-weight: bold; color: #000;
             box-shadow: 0 1px 0 rgba(0,0,0,0.2); cursor: pointer;
             display: flex; justify-content: center; align-items: center;
@@ -110,9 +114,18 @@
             <h2>手調計算</h2>
         </div>
         <div class="glue-selector">
-            <div class="glue-opt" onclick="setHandType(0, event)">17+18</div>
-            <div class="glue-opt" onclick="setHandType(1, event)">31+32</div>
-            <div class="glue-opt" onclick="setHandType(2, event)">35+36</div>
+            <div class="glue-opt" onclick="setHandType(0, event)">
+                <span class="opt-name">17+18</span>
+                <span class="opt-ratio">比例 0.15</span>
+            </div>
+            <div class="glue-opt" onclick="setHandType(1, event)">
+                <span class="opt-name">31+32</span>
+                <span class="opt-ratio">比例 0.1</span>
+            </div>
+            <div class="glue-opt" onclick="setHandType(2, event)">
+                <span class="opt-name">35+36</span>
+                <span class="opt-ratio">比例 0.5</span>
+            </div>
         </div>
         <div class="input-group">
             <label id="handLabelA">主劑重量 (g)</label>
@@ -124,7 +137,10 @@
             <div id="handTotal" class="res-value">--- g</div>
             <div id="handTotalRange" class="res-range-value" style="color: var(--range-text)">--- ~ ---</div>
         </div>
-        <div class="model-list-container"><div id="handTags" class="tag-container"></div></div>
+        <div class="model-list-container">
+            <div class="model-title">💡 適用型號列表：</div>
+            <div id="handTags" class="tag-container"></div>
+        </div>
     </div>
 
     <div id="machinePage" class="hidden">
